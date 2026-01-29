@@ -72,6 +72,7 @@ type Player struct {
 	IdentityDat login.IdentityData
 	GameDat     minecraft.GameData
 	Version     int32
+	Protocol    minecraft.Protocol
 
 	// With fast transfers, the client will still retain it's original runtime and unique IDs, so
 	// we must translate them to new ones, while still retaining the old ones for the client to use.

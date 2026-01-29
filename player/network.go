@@ -49,6 +49,7 @@ func (p *Player) Exec(conn *minecraft.Conn) {
 	p.ClientDat = conn.ClientData()
 	p.IdentityDat = conn.IdentityData()
 	p.Version = conn.Proto().ID()
+	p.Protocol = conn.Proto()
 
 	gameData := conn.GameData()
 	p.GameDat = gameData

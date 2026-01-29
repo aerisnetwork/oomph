@@ -415,11 +415,10 @@ func (p *Player) HandleServerPacket(ctx *context.HandlePacketContext) {
 			if !ok {
 				dim = world.Overworld
 			}
-			chunkEncoder := minecraft.NopChunkEncoder{}
-			if c, err := chunk.NetworkDecode(oworld.AirRuntimeID, pk.RawPayload, int(pk.SubChunkCount), dim.Range(), chunkEncoder); err != nil {
+			if c, err := chunk.NetworkDecode(oworld.AirRuntimeID, pk.RawPayload, int(pk.SubChunkCount), dim.Range(), p.Protocol.ChunkEncoder()); err != nil {
 				p.Log().Warn("unable to decode chunk", "error", err)
 			} else {
-				data := chunk.Encode(c, chunk.NetworkEncoding, chunkEncoder)
+				data := chunk.Encode(c, chunk.NetworkEncoding, p.Protocol.ChunkEncoder())
 				chunkBuf := bytes.NewBuffer(nil)
 				for _, sub := range data.SubChunks {
 					chunkBuf.Write(sub)
