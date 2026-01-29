@@ -15,31 +15,34 @@ import (
 	"golang.org/x/exp/maps"
 )
 
+// Context ...
+type Context = event.Context[*Player]
+
 type EventHandler interface {
 	// HandleJoin is called when a player connects to the proxy.
-	HandleJoin(ctx *event.Context[*Player])
+	HandleJoin(ctx *Context)
 	// HandleQuit is called when a player disconnects from the proxy.
-	HandleQuit(ctx *event.Context[*Player])
+	HandleQuit(ctx *Context)
 
 	// HandleCommand is called when a player sends an oomph command.
-	HandleCommand(ctx *event.Context[*Player], command string, args []string)
+	HandleCommand(ctx *Context, command string, args []string)
 
 	// HandlePunishment is called when a detection triggers a punishment for a player.
-	HandlePunishment(ctx *event.Context[*Player], detection Detection, message *string)
+	HandlePunishment(ctx *Context, detection Detection, message *string)
 	// HandleFlag is called when a detection flags a player.
 	// extraData is a list of key-value pairs in slog style: key1, val1, key2, val2, ... and can be converted
 	// to a map with utils.KeyValsToMap
-	HandleFlag(ctx *event.Context[*Player], detection Detection, extraData []any)
+	HandleFlag(ctx *Context, detection Detection, extraData []any)
 }
 
 // NopEventHandler is an event handler that does nothing.
 type NopEventHandler struct{}
 
-func (NopEventHandler) HandleJoin(*event.Context[*Player])                           {}
-func (NopEventHandler) HandleQuit(*event.Context[*Player])                           {}
-func (NopEventHandler) HandleCommand(*event.Context[*Player], string, []string)      {}
-func (NopEventHandler) HandlePunishment(*event.Context[*Player], Detection, *string) {}
-func (NopEventHandler) HandleFlag(*event.Context[*Player], Detection, []any)         {}
+func (NopEventHandler) HandleJoin(*Context)                           {}
+func (NopEventHandler) HandleQuit(*Context)                           {}
+func (NopEventHandler) HandleCommand(*Context, string, []string)      {}
+func (NopEventHandler) HandlePunishment(*Context, Detection, *string) {}
+func (NopEventHandler) HandleFlag(*Context, Detection, []any)         {}
 
 type ExampleEventHandler struct {
 	connected     map[string]*Player
@@ -119,7 +122,7 @@ func NewExampleEventHandler() *ExampleEventHandler {
 	return h
 }
 
-func (h *ExampleEventHandler) HandleJoin(ctx *event.Context[*Player]) {
+func (h *ExampleEventHandler) HandleJoin(ctx *Context) {
 	h.pMu.Lock()
 	defer h.pMu.Unlock()
 
@@ -130,7 +133,7 @@ func (h *ExampleEventHandler) HandleJoin(ctx *event.Context[*Player]) {
 	}
 }
 
-func (h *ExampleEventHandler) HandleQuit(ctx *event.Context[*Player]) {
+func (h *ExampleEventHandler) HandleQuit(ctx *Context) {
 	h.pMu.Lock()
 	defer h.pMu.Unlock()
 
@@ -138,7 +141,7 @@ func (h *ExampleEventHandler) HandleQuit(ctx *event.Context[*Player]) {
 	delete(h.allowedAlerts, ctx.Val().Name())
 }
 
-func (h *ExampleEventHandler) HandleCommand(ctx *event.Context[*Player], command string, args []string) {
+func (h *ExampleEventHandler) HandleCommand(ctx *Context, command string, args []string) {
 	p := ctx.Val()
 	switch command {
 	case "debug":
@@ -219,11 +222,11 @@ func (h *ExampleEventHandler) HandleCommand(ctx *event.Context[*Player], command
 	}
 }
 
-func (h *ExampleEventHandler) HandlePunishment(ctx *event.Context[*Player], detection Detection, message *string) {
+func (h *ExampleEventHandler) HandlePunishment(ctx *Context, detection Detection, message *string) {
 
 }
 
-func (h *ExampleEventHandler) HandleFlag(ctx *event.Context[*Player], dtc Detection, extraData []any) {
+func (h *ExampleEventHandler) HandleFlag(ctx *Context, dtc Detection, extraData []any) {
 	p := ctx.Val()
 	m := dtc.Metadata()
 

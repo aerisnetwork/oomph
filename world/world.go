@@ -102,6 +102,10 @@ func (w *World) Block(pos df_cube.Pos) world.Block {
 
 	// TODO: Implement and account for multi-layer blocks.
 	rid := c.Block(uint8(blockPos[0]), int16(blockPos[1]), uint8(blockPos[2]), 0)
+	if rid == 0 {
+		// TODO: fix it urself thx
+		return block.Air{}
+	}
 	if b, ok := world.BlockByRuntimeID(rid); ok {
 		return b
 	}

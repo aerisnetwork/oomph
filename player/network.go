@@ -3,6 +3,7 @@ package player
 import (
 	"context"
 	"net"
+	"sync"
 	"time"
 
 	"github.com/df-mc/dragonfly/server/world"
@@ -20,6 +21,47 @@ func (p *Player) Conn() *minecraft.Conn {
 // ServerConn returns the connection to the server.
 func (p *Player) ServerConn() ServerConn {
 	return p.serverConn
+}
+
+var (
+	items     map[int16]world.Item
+	itemsOnce sync.Once
+)
+
+// mappedItems ...
+func mappedItems(gameData minecraft.GameData) map[int16]world.Item {
+	itemsOnce.Do(func() {
+		m := make(map[int16]world.Item, len(gameData.Items))
+		for _, item := range gameData.Items {
+			if i, ok := world.ItemByName(item.Name, 0); ok {
+				m[item.RuntimeID] = i
+			}
+		}
+		items = m
+	})
+	return items
+}
+
+// Exec ...
+func (p *Player) Exec(conn *minecraft.Conn) {
+	p.conn = conn
+
+	p.ClientDat = conn.ClientData()
+	p.IdentityDat = conn.IdentityData()
+	p.Version = conn.Proto().ID()
+
+	gameData := conn.GameData()
+	p.GameDat = gameData
+	p.items = mappedItems(gameData)
+
+	p.RuntimeId = gameData.EntityRuntimeID
+	p.UniqueId = gameData.EntityUniqueID
+	p.GameMode = gameData.PlayerGameMode
+	if p.GameMode == packet.GameTypeDefault {
+		p.GameMode = gameData.WorldGameMode
+	}
+	p.movement.SetPos(p.GameDat.PlayerPosition)
+	p.movement.SetVel(mgl32.Vec3{})
 }
 
 // SetConn sets the connection to the client.

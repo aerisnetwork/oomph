@@ -64,6 +64,11 @@ var ServerDecode = []uint32{
 	packet.IDAvailableCommands,
 }
 
+// ServerPacketBroadcaster ...
+type ServerPacketBroadcaster interface {
+	BroadcastPacket(pk packet.Packet) error
+}
+
 func (p *Player) HandleClientPacket(ctx *context.HandlePacketContext) {
 	defer p.recoverError()
 

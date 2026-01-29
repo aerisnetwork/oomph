@@ -53,8 +53,9 @@ const (
 )
 
 type Player struct {
-	State  *State
-	MState MonitoringState
+	State       *State
+	MState      MonitoringState
+	Broadcaster ServerPacketBroadcaster
 
 	Ready  bool
 	Closed bool
@@ -211,10 +212,11 @@ type Player struct {
 }
 
 // New creates and returns a new Player instance.
-func New(state *State, log *slog.Logger) *Player {
+func New(state *State, broadcaster ServerPacketBroadcaster, log *slog.Logger) *Player {
 	p := &Player{
-		State:  state,
-		MState: MonitoringState{},
+		State:       state,
+		MState:      MonitoringState{},
+		Broadcaster: broadcaster,
 
 		ReceiveAlerts: true,
 		AlertDelay:    0,
@@ -325,6 +327,9 @@ func (p *Player) SendPacketToClient(pk packet.Packet) error {
 func (p *Player) SendPacketToServer(pk packet.Packet) error {
 	if pk == nil {
 		return nil
+	}
+	if broadcaster := p.Broadcaster; broadcaster != nil {
+		return p.Broadcaster.BroadcastPacket(pk)
 	}
 
 	if p.MState.IsReplay {
