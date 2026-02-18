@@ -156,6 +156,11 @@ type MovementComponent interface {
 	// SetGravity sets the gravity of the movement component.
 	SetGravity(gravity float32)
 
+	// HasGravity returns true if the movement component is affected by gravity.
+	HasGravity() bool
+	// SetHasGravity sets if the movement component is affected by gravity.
+	SetHasGravity(bool)
+
 	// FallDistance returns the fall distance of the movement component.
 	FallDistance() float32
 	// SetFallDistance sets the fall distance of the movement component.
@@ -311,7 +316,7 @@ func (p *Player) handleMovement(pk *packet.PlayerAuthInput) {
 		p.movement.SetCorrectionCooldown(false)
 
 		// We can only accept the client's position/velocity if we are not in a cooldown period (and it is specified in the config).
-		srvInsideBlocks, clientInsideBlocks := len(utils.GetNearbyBBoxes(p.movement.BoundingBox(), p.World())) > 0, len(utils.GetNearbyBBoxes(p.movement.ClientBoundingBox(), p.World())) > 0
+		srvInsideBlocks, clientInsideBlocks := utils.HasNearbyBBoxes(p.movement.BoundingBox(), p.World()), utils.HasNearbyBBoxes(p.movement.ClientBoundingBox(), p.World())
 		if !inCooldown && p.movement.PendingTeleports() == 0 && !hasTeleport && !p.movement.Immobile() && srvInsideBlocks == clientInsideBlocks {
 			if p.Opts().Movement.AcceptClientPosition && posDiff.Len() < p.Opts().Movement.PositionAcceptanceThreshold {
 				posDiff = mgl32.Vec3{}

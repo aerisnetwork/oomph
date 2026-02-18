@@ -124,6 +124,8 @@ type AuthoritativeMovementComponent struct {
 	gliding         bool
 	glideBoostTicks int64
 
+	hasGravity bool
+
 	flying, mayFly, trustFlyStatus bool
 	justDisabledFlight             bool
 
@@ -508,6 +510,16 @@ func (mc *AuthoritativeMovementComponent) SetGravity(newGravity float32) {
 	mc.gravity = newGravity
 }
 
+// HasGravity returns true if the movement component is affected by gravity.
+func (mc *AuthoritativeMovementComponent) HasGravity() bool {
+	return mc.hasGravity
+}
+
+// SetHasGravity sets if the movement component is affected by gravity.
+func (mc *AuthoritativeMovementComponent) SetHasGravity(hg bool) {
+	mc.hasGravity = hg
+}
+
 // JumpHeight returns the jump height of the movement component.
 func (mc *AuthoritativeMovementComponent) JumpHeight() float32 {
 	return mc.jumpHeight
@@ -810,7 +822,11 @@ func (mc *AuthoritativeMovementComponent) Update(pk *packet.PlayerAuthInput) {
 	if !mc.pressingJump {
 		mc.jumpDelay = 0
 	}
+
 	mc.gravity = game.NormalGravity
+	if _, ok := mc.mPlayer.Effects().Get(packet.EffectSlowFalling); ok {
+		mc.gravity = game.SlowFallingGravity
+	}
 
 	// The stop flag should be checked first, as this would indicate to us that the player is no longer gliding.
 	// In the case where both flags are sent in the same tick, the gliding status will be set to false.
