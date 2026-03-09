@@ -1,6 +1,6 @@
 module github.com/oomph-ac/oomph
 
-go 1.25.0
+go 1.26
 
 require (
 	github.com/chewxy/math32 v1.11.1
@@ -9,7 +9,7 @@ require (
 	github.com/go-gl/mathgl v1.2.0
 	github.com/oomph-ac/oconfig v0.0.0-20251121222848-6cf6c66594b8
 	github.com/sandertv/go-raknet v1.15.0
-	github.com/sandertv/gophertunnel v1.53.0
+	github.com/sandertv/gophertunnel v1.54.0
 	github.com/zeebo/xxh3 v1.1.0
 	golang.org/x/exp v0.0.0-20260112195511-716be5621a96
 )
@@ -37,7 +37,7 @@ require (
 )
 
 replace (
-	github.com/df-mc/dragonfly => github.com/aerisnetwork/dragonfly v0.0.0-20260125153726-c9dd8d0e4bc4
-	github.com/sandertv/go-raknet => github.com/aerisnetwork/aeris-raknet v1.0.6-0.20260125192332-d5f42aef83fb
-	github.com/sandertv/gophertunnel => github.com/aerisnetwork/aeris-gophertunnel v0.1.0-r21u13
+	github.com/df-mc/dragonfly => github.com/aerisnetwork/dragonfly v0.0.0-20260308172148-3ff070561bbf
+	github.com/sandertv/go-raknet => github.com/aerisnetwork/aeris-raknet v1.0.16
+	github.com/sandertv/gophertunnel => github.com/aerisnetwork/aeris-gophertunnel v0.0.10-r26u0
 )
