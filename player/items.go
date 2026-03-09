@@ -26,8 +26,7 @@ func (p *Player) ConvertToStack(it protocol.ItemStack) item.Stack {
 	if nbter, ok := t.(world.NBTer); ok && len(it.NBTData) != 0 {
 		t = nbter.DecodeNBT(it.NBTData).(world.Item)
 	}
-	s := item.NewStack(t, int(it.Count))
-	return nbtconv_Item(it.NBTData, &s).AsUnbreakable()
+	return nbtconv_Item(it.NBTData, new(item.NewStack(t, int(it.Count)))).AsUnbreakable()
 }
 
 // noinspection ALL

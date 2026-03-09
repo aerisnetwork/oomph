@@ -468,8 +468,7 @@ func (p *Player) HandleServerPacket(ctx *context.HandlePacketContext) {
 			p.entTracker.HandleSetActorData(pk)
 			p.clientEntTracker.HandleSetActorData(pk)
 		} else {
-			copyPk := *pk
-			p.LastSetActorData = &copyPk
+			p.LastSetActorData = new(*pk)
 			p.movement.ServerUpdate(pk)
 		}
 	case *packet.SetActorMotion:
