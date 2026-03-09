@@ -214,7 +214,6 @@ type Player struct {
 
 // New creates and returns a new Player instance.
 func New(state *State, broadcaster ServerPacketBroadcaster, log *slog.Logger) *Player {
-	world.FinalizeBlockRegistry()
 	p := &Player{
 		State:       state,
 		MState:      MonitoringState{},
